@@ -33,7 +33,11 @@ def runConfig(inputdir, compression="none", chunker_params=None):
         # parse output
         m = re.match(".*This archive: +(\d+\.?\d+ ..) +(\d+\.?\d+ ..) +(\d+\.?\d+ ..).*Chunk index: +(\d+) +(\d+)", str(output))
         if m:
-            original_size, compressed_size, dedup_size, unique_chunks, total_chunks = re.match(1, 2, 3, 4, 5)
+            if chunker_params:
+                cmin, cmax, cavg = chunker_params
+            else:
+                cmin, cmax, cavg = 0, 0, 0
+            original_size, compressed_size, dedup_size, unique_chunks, total_chunks = m.group(1, 2, 3, 4, 5)
             info_items = [compression, cmin, cmax, cavg, original_size, compressed_size, dedup_size, unique_chunks, total_chunks, duration]
             print(';'.join(map(str, info_items)))
 
