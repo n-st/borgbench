@@ -37,6 +37,7 @@ def runConfig(inputdir, compression="none", chunker_params=None):
         else:
             print("Error")
 
+
 # Directory with input data that will be added to Borg repos with different
 # compression settings.
 # For speed reasons, this should be a tmpfs.
@@ -88,13 +89,15 @@ chunker_settings = [
     (18, 18, 18),
 ]
 
-print_header()
 
-for params in chunker_settings:
-    # Deduplication is done based on the contents of chunks *before* they are
-    # compressed, so we don't need to use any compression during the chunker
-    # benchmark.
-    runConfig(testData, chunker_params=params)
+if __name__ == "__main__":
+    print_header()
 
-for comp in compression_settings:
-    runConfig(testData, comp)
+    for params in chunker_settings:
+        # Deduplication is done based on the contents of chunks *before* they are
+        # compressed, so we don't need to use any compression during the chunker
+        # benchmark.
+        runConfig(testData, chunker_params=params)
+
+    for comp in compression_settings:
+        runConfig(testData, comp)
