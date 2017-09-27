@@ -5,6 +5,10 @@ import re
 from tempfile import TemporaryDirectory
 from timeit import default_timer as timer
 
+def print_header():
+    info_items = ['Compression setting', 'CHUNK_MIN_EXP', 'CHUNK_MAX_EXP', 'CHUNK_HASH_MASK_BITS', 'Original size', 'Compressed size', 'Deduplicated size', 'Unique chunks', 'Total chunks', 'Duration [seconds]']
+    print(';'.join(map(str, info_items)))
+
 # single benchmark run
 def runConfig(inputdir, compression="none", chunker_params=None):
     """ If given, chunker_params should be a tuple of (cmin, cmax, cavg). """
@@ -83,6 +87,8 @@ chunker_settings = [
     (20, 23, 21),
     (18, 18, 18),
 ]
+
+print_header()
 
 for params in chunker_settings:
     # Deduplication is done based on the contents of chunks *before* they are
