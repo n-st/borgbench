@@ -38,7 +38,7 @@ def runConfig(inputdir, compression="none", chunker_params=None):
             print(';'.join(map(str, info_items)))
 
         else:
-            print("Error")
+            sys.stderr.write(output)
 
 
 compression_settings = [
