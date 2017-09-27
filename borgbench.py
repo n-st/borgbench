@@ -4,6 +4,9 @@ import subprocess
 import re
 from tempfile import TemporaryDirectory
 from timeit import default_timer as timer
+import sys
+import os.path
+import errno
 
 def print_header():
     info_items = ['Compression setting', 'CHUNK_MIN_EXP', 'CHUNK_MAX_EXP', 'CHUNK_HASH_MASK_BITS', 'Original size', 'Compressed size', 'Deduplicated size', 'Unique chunks', 'Total chunks', 'Duration [seconds]']
@@ -37,11 +40,6 @@ def runConfig(inputdir, compression="none", chunker_params=None):
         else:
             print("Error")
 
-
-# Directory with input data that will be added to Borg repos with different
-# compression settings.
-# For speed reasons, this should be a tmpfs.
-testData = "/tmp/borgbench/testdata"
 
 compression_settings = [
     "none",
@@ -90,7 +88,37 @@ chunker_settings = [
 ]
 
 
+def print_usage():
+    sys.stderr.write(
+"""borgbench:
+compare speed and efficiency of borgbackup compression and chunker settings
+
+Usage:
+    %s <path to testdata>
+
+To produce accurate results for your use case, you need to provide your own
+test data.  Create a directory with a collection of files resembling what
+you'll be backing up with borg later, then run this script with the test data
+directory as an argument.
+Ideally, you should store the test data on a tmpfs ("RAM disk") so the results
+won't be skewed by your disk speed.
+The script will copy your test data to the system's temporary storage, so make
+sure there's enough space in there to temporarily store your entire set of test
+data.
+""" % sys.argv[0])
+
 if __name__ == "__main__":
+    if len(sys.argv) != 2 or sys.argv[1] in ['-h', '--help']:
+        print_usage()
+        sys.exit(errno.EINVAL)
+
+    testData = sys.argv[1]
+
+    if not os.path.exists(testData):
+        sys.stderr.write('The path to your test data (%s) doesn\'t exist.\n')
+        print_usage()
+        sys.exit(errno.ENOENT)
+
     print_header()
 
     for params in chunker_settings:
