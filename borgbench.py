@@ -17,7 +17,10 @@ def runConfig(inputdir, compression="none", chunker_params=None):
     """ If given, chunker_params should be a tuple of (cmin, cmax, cavg). """
 
     with TemporaryDirectory(prefix='borgbench_') as tempdir:
-        subprocess.call(["borg", "init", "-e", "none", tempdir])
+        returncode = subprocess.call(["borg", "init", "-e", "none", tempdir])
+        if returncode != 0:
+            sys.stderr.write('`borg init` reported failure\n')
+            return
 
         commandline = ["borg"]
         commandline += ["create", tempdir+"::test", "-v", "-s", "-C", compression]
