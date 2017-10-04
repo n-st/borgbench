@@ -22,7 +22,11 @@ data.
 
 ---
 
-Original idea and implementation by Michael Gajda (dragetd), improved and
-modularised for general use by Nils Steinger (n-st).
+[Original idea and implementation][1] by Michael Gajda (dragetd), [improved and
+modularised][2] for general use by Nils Steinger (n-st).
 
-Test results in this repo provided by Michael Gajda.
+Test results (in the `chunking` and `compression` subdirectories) provided by
+Michael Gajda.
+
+[1]: https://github.com/dragetd/borgbench
+[2]: https://github.com/n-st/borgbench
