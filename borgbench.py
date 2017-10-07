@@ -12,6 +12,14 @@ def print_header():
     info_items = ['Compression setting', 'CHUNK_MIN_EXP', 'CHUNK_MAX_EXP', 'CHUNK_HASH_MASK_BITS', 'Original size', 'Compressed size', 'Deduplicated size', 'Unique chunks', 'Total chunks', 'Duration [seconds]']
     print(';'.join(map(str, info_items)))
 
+def parse_human_output(output_str):
+    print(output_str)
+    m = re.match(".*This archive: +(\d+\.?\d+ ..) +(\d+\.?\d+ ..) +(\d+\.?\d+ ..).*Chunk index: +(\d+) +(\d+)", output_str)
+    if m:
+        return m.group(1, 2, 3, 4, 5)
+    else:
+        return None
+
 # single benchmark run
 def runConfig(inputdir, compression="none", chunker_params=None):
     """ If given, chunker_params should be a tuple of (cmin, cmax, cavg). """
@@ -38,13 +46,13 @@ def runConfig(inputdir, compression="none", chunker_params=None):
         duration = timer() - start
 
         # parse output
-        m = re.match(".*This archive: +(\d+\.?\d+ ..) +(\d+\.?\d+ ..) +(\d+\.?\d+ ..).*Chunk index: +(\d+) +(\d+)", str(output))
-        if m:
+        result = parse_human_output(str(output))
+        if result:
             if chunker_params:
                 cmin, cmax, cavg = chunker_params
             else:
                 cmin, cmax, cavg = 0, 0, 0
-            original_size, compressed_size, dedup_size, unique_chunks, total_chunks = m.group(1, 2, 3, 4, 5)
+            original_size, compressed_size, dedup_size, unique_chunks, total_chunks = result
             info_items = [compression, cmin, cmax, cavg, original_size, compressed_size, dedup_size, unique_chunks, total_chunks, duration]
             print(';'.join(map(str, info_items)))
 
