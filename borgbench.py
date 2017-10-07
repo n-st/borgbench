@@ -30,7 +30,7 @@ def runConfig(inputdir, compression="none", chunker_params=None):
         commandline += [inputdir]
 
         start = timer()
-        proc = subprocess.Popen(commandline, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen(commandline, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output = proc.stderr.read()
         duration = timer() - start
 
