@@ -7,6 +7,7 @@ from timeit import default_timer as timer
 import sys
 import os.path
 import errno
+import json
 
 def print_header():
     info_items = ['Compression setting', 'CHUNK_MIN_EXP', 'CHUNK_MAX_EXP', 'CHUNK_HASH_MASK_BITS', 'Original size', 'Compressed size', 'Deduplicated size', 'Unique chunks', 'Total chunks', 'Duration [seconds]']
@@ -19,6 +20,16 @@ def parse_human_output(output_str):
         return m.group(1, 2, 3, 4, 5)
     else:
         return None
+
+def parse_json_output(output_str):
+    j = json.loads(output_str)
+    return (
+            j["archive"]["stats"]["original_size"],
+            j["archive"]["stats"]["compressed_size"],
+            j["archive"]["stats"]["deduplicated_size"],
+            j["cache"]["stats"]["total_unique_chunks"],
+            j["cache"]["stats"]["total_chunks"],
+        )
 
 # single benchmark run
 def runConfig(inputdir, compression="none", chunker_params=None):
@@ -34,6 +45,7 @@ def runConfig(inputdir, compression="none", chunker_params=None):
         commandline += ["create", "-v", "-s", "-C", compression]
         if chunker_params:
             commandline += ["--chunker-params=%d,%d,%d,4095" % (chunker_params)]
+        commandline += ['--json']
         commandline += [tempdir+"::test"]
         commandline += [inputdir]
 
@@ -42,11 +54,17 @@ def runConfig(inputdir, compression="none", chunker_params=None):
 
         start = timer()
         proc = subprocess.Popen(commandline, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
-        output = proc.stderr.read()
+        output = proc.stdout.read()
+        errput = proc.stderr.read()
         duration = timer() - start
 
-        # parse output
-        result = parse_human_output(str(output))
+        borg_supports_json=True
+
+        if borg_supports_json:
+            result = parse_json_output(output.decode('utf-8'))
+        else:
+            result = parse_human_output(errput.decode('utf-8'))
+
         if result:
             if chunker_params:
                 cmin, cmax, cavg = chunker_params
