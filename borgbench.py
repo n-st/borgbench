@@ -29,8 +29,11 @@ def runConfig(inputdir, compression="none", chunker_params=None):
         commandline += [tempdir+"::test"]
         commandline += [inputdir]
 
+        env = os.environ.copy()
+        env["BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK"] = "yes"
+
         start = timer()
-        proc = subprocess.Popen(commandline, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen(commandline, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
         output = proc.stderr.read()
         duration = timer() - start
 
