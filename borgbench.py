@@ -14,7 +14,7 @@ def print_header():
 
 def parse_human_output(output_str):
     print(output_str)
-    m = re.match(".*This archive: +(\d+\.?\d+ ..) +(\d+\.?\d+ ..) +(\d+\.?\d+ ..).*Chunk index: +(\d+) +(\d+)", output_str)
+    m = re.match(".*This archive: +(\d+\.?\d+ .?B) +(\d+\.?\d+ .?B) +(\d+\.?\d+ .?B).*Chunk index: +(\d+) +(\d+)", output_str)
     if m:
         return m.group(1, 2, 3, 4, 5)
     else:
