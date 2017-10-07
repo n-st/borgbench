@@ -23,9 +23,10 @@ def runConfig(inputdir, compression="none", chunker_params=None):
             return
 
         commandline = ["borg"]
-        commandline += ["create", tempdir+"::test", "-v", "-s", "-C", compression]
+        commandline += ["create", "-v", "-s", "-C", compression]
         if chunker_params:
             commandline += ["--chunker-params=%d,%d,%d,4095" % (chunker_params)]
+        commandline += [tempdir+"::test"]
         commandline += [inputdir]
 
         start = timer()
