@@ -9,8 +9,25 @@ import os.path
 import errno
 import json
 
-def print_header():
-    info_items = ['Compression setting', 'CHUNK_MIN_EXP', 'CHUNK_MAX_EXP', 'CHUNK_HASH_MASK_BITS', 'Original size', 'Compressed size', 'Deduplicated size', 'Unique chunks', 'Total chunks', 'Duration [seconds]']
+def print_header(borg_supports_json=False):
+    info_items = []
+    info_items += ['Compression setting']
+    info_items += ['CHUNK_MIN_EXP']
+    info_items += ['CHUNK_MAX_EXP']
+    info_items += ['CHUNK_HASH_MASK_BITS']
+    if borg_supports_json:
+        # JSON format contains raw byte values
+        info_items += ['Original size [bytes]']
+        info_items += ['Compressed size [bytes]']
+        info_items += ['Deduplicated size [bytes]']
+    else:
+        # Human format contains strings like "123.4 MB"
+        info_items += ['Original size']
+        info_items += ['Compressed size']
+        info_items += ['Deduplicated size']
+    info_items += ['Unique chunks']
+    info_items += ['Total chunks']
+    info_items += ['Duration [seconds]']
     print(';'.join(map(str, info_items)))
 
 def parse_human_output(output_str):
