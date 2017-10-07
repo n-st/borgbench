@@ -51,7 +51,7 @@ def parse_json_output(output_str):
         return None
 
 # single benchmark run
-def runConfig(inputdir, compression="none", chunker_params=None):
+def runConfig(inputdir, compression="none", chunker_params=None, borg_supports_json=False):
     """ If given, chunker_params should be a tuple of (cmin, cmax, cavg). """
 
     with TemporaryDirectory(prefix='borgbench_') as tempdir:
@@ -64,7 +64,8 @@ def runConfig(inputdir, compression="none", chunker_params=None):
         commandline += ["create", "-v", "-s", "-C", compression]
         if chunker_params:
             commandline += ["--chunker-params=%d,%d,%d,4095" % (chunker_params)]
-        commandline += ['--json']
+        if borg_supports_json:
+            commandline += ['--json']
         commandline += [tempdir+"::test"]
         commandline += [inputdir]
 
