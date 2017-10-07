@@ -22,14 +22,17 @@ def parse_human_output(output_str):
         return None
 
 def parse_json_output(output_str):
-    j = json.loads(output_str)
-    return (
-            j["archive"]["stats"]["original_size"],
-            j["archive"]["stats"]["compressed_size"],
-            j["archive"]["stats"]["deduplicated_size"],
-            j["cache"]["stats"]["total_unique_chunks"],
-            j["cache"]["stats"]["total_chunks"],
-        )
+    try:
+        j = json.loads(output_str)
+        return (
+                j["archive"]["stats"]["original_size"],
+                j["archive"]["stats"]["compressed_size"],
+                j["archive"]["stats"]["deduplicated_size"],
+                j["cache"]["stats"]["total_unique_chunks"],
+                j["cache"]["stats"]["total_chunks"],
+            )
+    except:
+        return None
 
 # single benchmark run
 def runConfig(inputdir, compression="none", chunker_params=None):
