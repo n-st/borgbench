@@ -74,16 +74,14 @@ def runConfig(inputdir, compression="none", chunker_params=None, borg_supports_j
 
         start = timer()
         proc = subprocess.Popen(commandline, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
-        output = proc.stdout.read()
-        errput = proc.stderr.read()
+        output = proc.stdout.read().decode('utf-8')
+        errput = proc.stderr.read().decode('utf-8')
         duration = timer() - start
 
-        borg_supports_json=True
-
         if borg_supports_json:
-            result = parse_json_output(output.decode('utf-8'))
+            result = parse_json_output(output)
         else:
-            result = parse_human_output(errput.decode('utf-8'))
+            result = parse_human_output(errput)
 
         if result:
             if chunker_params:
@@ -95,7 +93,9 @@ def runConfig(inputdir, compression="none", chunker_params=None, borg_supports_j
             print(';'.join(map(str, info_items)))
 
         else:
-            sys.stderr.write(output.decode('utf-8'))
+            sys.stderr.write('!! Could not parse borg output:\n')
+            sys.stderr.write(output)
+            sys.stderr.write(errput)
 
 
 compression_settings = [
