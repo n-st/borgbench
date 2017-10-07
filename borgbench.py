@@ -97,6 +97,13 @@ def runConfig(inputdir, compression="none", chunker_params=None, borg_supports_j
             sys.stderr.write(output)
             sys.stderr.write(errput)
 
+def check_borg_json_support():
+    commandline = ["borg"]
+    commandline += ['--help']
+    proc = subprocess.Popen(commandline, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    output = proc.stdout.read().decode('utf-8')
+    return '--log-json' in output
+
 
 compression_settings = [
     "none",
@@ -176,13 +183,21 @@ if __name__ == "__main__":
         print_usage()
         sys.exit(errno.ENOENT)
 
-    print_header()
+    borg_supports_json = check_borg_json_support()
+    if not borg_supports_json:
+        sys.stderr.write("Your version of borg does not yet support the new " +
+                "JSON output format (introduced in borg 1.1).\n" +
+                "Falling back to parsing human-readable output (which " +
+                "doesn't provide byte-accurate values).\n")
+
+    print_header(borg_supports_json=borg_supports_json)
 
     for params in chunker_settings:
         # Deduplication is done based on the contents of chunks *before* they are
         # compressed, so we don't need to use any compression during the chunker
         # benchmark.
-        runConfig(testData, chunker_params=params)
+        runConfig(testData, chunker_params=params,
+                borg_supports_json=borg_supports_json)
 
     for comp in compression_settings:
-        runConfig(testData, comp)
+        runConfig(testData, comp, borg_supports_json=borg_supports_json)
