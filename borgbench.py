@@ -46,7 +46,7 @@ def runConfig(inputdir, compression="none", chunker_params=None):
             print(';'.join(map(str, info_items)))
 
         else:
-            sys.stderr.write(output)
+            sys.stderr.write(output.decode('utf-8'))
 
 
 compression_settings = [
