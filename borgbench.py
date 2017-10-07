@@ -31,8 +31,7 @@ def print_header(borg_supports_json=False):
     print(';'.join(map(str, info_items)))
 
 def parse_human_output(output_str):
-    print(output_str)
-    m = re.match(".*This archive: +(\d+\.?\d+ .?B) +(\d+\.?\d+ .?B) +(\d+\.?\d+ .?B).*Chunk index: +(\d+) +(\d+)", output_str)
+    m = re.match(r'.*This archive: +(\d+\.?\d? .?B) +(\d+\.?\d? .?B) +(\d+\.?\d? .?B).*Chunk index: +(\d+) +(\d+)', output_str, flags=re.DOTALL)
     if m:
         return m.group(1, 2, 3, 4, 5)
     else:
