@@ -98,11 +98,10 @@ def runConfig(inputdir, compression="none", chunker_params=None, borg_supports_j
             sys.stderr.write(errput)
 
 def check_borg_json_support():
-    commandline = ["borg"]
-    commandline += ['--help']
+    commandline = ["borg", "help", "create"]
     proc = subprocess.Popen(commandline, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     output = proc.stdout.read().decode('utf-8')
-    return '--log-json' in output
+    return ' --json ' in output
 
 
 compression_settings = [
